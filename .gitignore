@@ -1,0 +1,23 @@
+# Maven / javadoc
+**/out/
+**/target/
+**/build/
+**/javadoc/
+**/apidocs/
+**/testapidocs/
+
+# intellij
+**/*.iml
+**/.gradle
+**/local.properties
+**/.idea/
+
+# Eclipse
+**/.project
+**/.classpath
+**/.settings/
+.metadata/
+.recommenders/
+
+# Mac OS
+**/.DS_Store
