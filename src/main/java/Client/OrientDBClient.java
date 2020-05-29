@@ -15,12 +15,12 @@ public class OrientDBClient {
     private static final String[] VERTEX_CLASSES = {"Person", "Feedback", "Order", "Tag", "Post", "Invoice", "Seller", "Product"};
 
     public OrientDBClient(){
-        this.orient = new OrientDB("remote:54.93.113.62", "root", "root", OrientDBConfig.defaultConfig());
+        this.orient = new OrientDB("remote:88.136.56.208", "root", "root", OrientDBConfig.defaultConfig());
 //        this.orient.drop("big-data-project");
-        this.orient.create("big-data-project", ODatabaseType.PLOCAL);
+//        this.orient.create("big-data-project", ODatabaseType.PLOCAL);
         this.db = this.orient.open("big-data-project", "admin", "admin");
         this.csvLoader = new CSVLoader(this.db);
-        createSchema();
+//        createSchema();
 //        importData();
     }
 
