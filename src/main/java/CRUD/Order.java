@@ -15,7 +15,7 @@ public class Order {
 
         while (rs.hasNext()) {
             OResult item = rs.next();
-            System.out.println("order: " + item.getProperty("OrderId"));
+            System.out.println("order: " + item.getProperty("Orderline"));
         }
 
         rs.close();

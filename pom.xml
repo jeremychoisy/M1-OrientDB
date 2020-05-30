@@ -30,7 +30,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>CRUD.Customer</mainClass>
+                    <mainClass>CRUD.Order</mainClass>
                     <!--TODO: Remove when java.lang.IllegalThreadStateException is fixed-->
                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
                 </configuration>
