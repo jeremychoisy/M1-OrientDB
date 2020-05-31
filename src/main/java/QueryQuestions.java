@@ -1,4 +1,3 @@
-import CRUD.Customer;
 import Client.OrientDBClient;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.sql.executor.OResult;
@@ -8,7 +7,7 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 class QueryQuestions {
     String query;
 
-    OrientDBClient orient = new OrientDBClient();
+    OrientDBClient orient = new OrientDBClient(false);
     ODatabaseSession db = orient.getDB();
 
     void question1(String clientId) {
