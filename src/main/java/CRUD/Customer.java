@@ -8,7 +8,7 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 public class Customer {
     // Test
     public static void main(String[] args) {
-        OrientDBClient orient = new OrientDBClient();
+        OrientDBClient orient = new OrientDBClient(false);
         ODatabaseSession db = orient.getDB();
         String query = "SELECT from Person where lastName = ?";
         OResultSet rs = db.query(query, "Cohen");
