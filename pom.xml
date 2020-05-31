@@ -30,8 +30,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>CRUD.Order</mainClass>
-                    <!--TODO: Remove when java.lang.IllegalThreadStateException is fixed-->
+                    <mainClass>Launcher.Launcher</mainClass>
                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
                 </configuration>
             </plugin>
@@ -42,13 +41,12 @@
         <dependency>
             <groupId>com.orientechnologies</groupId>
             <artifactId>orientdb-client</artifactId>
-            <version>3.0.27</version>
+            <version>3.0.31</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20200518</version>
         </dependency>
-
     </dependencies>
 </project>

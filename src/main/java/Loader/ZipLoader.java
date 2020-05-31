@@ -20,10 +20,10 @@ class ZipLoader {
     }
 
     InputStream getInputStreamFromZip(String fileName) {
-        try  {
+        try {
             Enumeration<? extends ZipEntry> entries = this.zipFile.entries();
 
-            while(entries.hasMoreElements()){
+            while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 if (entry.getName().equals(fileName)) {
                     return this.zipFile.getInputStream(entry);
@@ -35,7 +35,7 @@ class ZipLoader {
         return null;
     }
 
-    void close(){
+    void close() {
         try {
             this.zipFile.close();
         } catch (IOException e) {

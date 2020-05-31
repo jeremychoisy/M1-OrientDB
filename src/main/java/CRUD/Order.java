@@ -7,7 +7,7 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
 public class Order {
     public static void main(String[] args) {
-        OrientDBClient orient = new OrientDBClient();
+        OrientDBClient orient = new OrientDBClient(false);
         ODatabaseSession db = orient.getDB();
 
         String query = "SELECT from Order where PersonId = ? LIMIT 10";
