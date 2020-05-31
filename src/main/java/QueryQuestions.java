@@ -5,19 +5,35 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
 
 class QueryQuestions {
+
+
     String query;
 
     OrientDBClient orient = new OrientDBClient(false);
     ODatabaseSession db = orient.getDB();
 
+    public static void main(String[] args) {
+        QueryQuestions qq = new QueryQuestions();
+        qq.question1("2199023256728");
+        qq.question2("B0000568SY");
+        qq.question3("B0000568SY");
+        qq.question4();
+        qq.question5("2199023256728", "Franklin Sports");
+        qq.question6("2199023256728", "4398046521398");
+        qq.question7("Franklin Sports");
+        qq.question8();
+        qq.question9();
+        qq.question10();
+    }
+
     void question1(String clientId) {
-        query = "Select $profile,$orders,$feedback,$posts,$list1,$list2 "
+        query = "Select $profile,$posts,$brandList2,$feedback,$orders,$brandList1 "
                 + "let $profile=(select from `Customer` where id=?),"
-                + "$orders=(select Expand(Order) from `Customer` where id=?),"
-                + "$feedback=(select Expand(Feedback) from `Customer` where id=?),"
                 + "$posts= (select Out(\'PersonHasPost\') from `Customer` where id=?),"
-                + "$list1= (select list.brand as brand, count(list.brand) as cnt from (select Order.Orderline as list from `Customer` where id=? unwind list) group by list.brand ORDER BY cnt DESC),"
-                + "$list2=(select pid, count(pid) from (select Out(\'PersonHasPost\').Out(\'PostHasTag\').productId as pid from `Customer` where id=? unwind pid) group by pid order by count Desc)";
+                + "$brandList2=(select pid, count(pid) from (select Out(\'PersonHasPost\').Out(\'PostHasTag\').productId as pid from `Customer` where id=? unwind pid) group by pid order by count Desc),"
+                + "$feedback=(select Expand(Feedback) from `Customer` where id=?),"
+                + "$orders=(select Expand(Order) from `Customer` where id=?),"
+                + "$brandList1= (select list.brand as brand, count(list.brand) as cnt from (select Order.Orderline as list from `Customer` where id=? unwind list) group by list.brand ORDER BY cnt DESC)";
 
         OResultSet rs = db.query(query, clientId, clientId, clientId, clientId, clientId, clientId);
 
@@ -72,7 +88,6 @@ class QueryQuestions {
         }
     }
 
-
     void question5(String clientId, String marque) {
         String query = "Select Out(\'PersonHasPost\').Out(\'PostHasTag\') " +
                 "as tags from (select Expand(Out(\'Knows\')) from Customer where id=?) " +
@@ -89,12 +104,12 @@ class QueryQuestions {
         orient.close();
     }
 
-    void question6(String customer1, String customer2) {
+    void question6(String clientId1, String clientId2) {
         query = "SELECT transactions, count(transactions) as cnt "
                 + "FROM(SELECT Order.Orderline.productId as transactions from(SELECT EXPAND(path) from(SELECT shortestPath($from, $to) AS path "
                 + "LET $from = (SELECT FROM Customer WHERE id=?),"
                 + "$to = (SELECT FROM Customer WHERE id=?))) unwind transactions) GROUP BY transactions Order by cnt DESC LIMIT 5";
-        OResultSet rs = db.query(query, customer1, customer2);
+        OResultSet rs = db.query(query, clientId1, clientId2);
 
         while (rs.hasNext()) {
             OResult item = rs.next();
