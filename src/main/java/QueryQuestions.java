@@ -78,9 +78,6 @@ class QueryQuestions {
                 "as tags from (select Expand(Out(\'Knows\')) from Customer where id=?) " +
                 "Where ? in Order.Orderline.brand unwind tags";
 
-        OrientDBClient orient = new OrientDBClient();
-        ODatabaseSession db = orient.getDB();
-
         OResultSet rs = db.query(query, clientId, marque);
 
         while (rs.hasNext()) {
