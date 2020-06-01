@@ -110,10 +110,10 @@ public class OrientDBClient {
 
         // Generated Edge
         generateEdge("ProductIsInOrder", "Product", "Order", "asin", "Orderline.asin", true);
-//        generateEdge("ProductHasFeedback", "Product", "Feedback", "asin", "productId", false);
-//        generateEdge("PersonGaveFeedback", "Person", "Feedback", "id", "personId", false);
-//        generateEdge("PersonBoughtOrder", "Person", "Order", "id", "PersonId", false);
-//        generateEdge("OrderHasInvoice", "Order", "Invoice", "OrderId", "OrderId", false);
+        generateEdge("ProductHasFeedback", "Product", "Feedback", "asin", "productId", false);
+        generateEdge("PersonGaveFeedback", "Person", "Feedback", "id", "personId", false);
+        generateEdge("PersonBoughtOrder", "Person", "Order", "id", "PersonId", false);
+        generateEdge("OrderHasInvoice", "Order", "Invoice", "OrderId", "OrderId", false);
 
         System.out.println("Data has been successfully generated.");
     }
@@ -128,7 +128,7 @@ public class OrientDBClient {
 
             String secondQuery;
             if (isInFieldQueriedInArray) {
-                String[] fields = inField.split(".");
+                String[] fields = inField.split("\\.");
                 secondQuery = "SELECT from " + inClass + " where " + fields[0] + " CONTAINS( " + fields[1] + " = ?)";
             } else {
                 secondQuery = "SELECT from " + inClass + " where " + inField + " = ?";
