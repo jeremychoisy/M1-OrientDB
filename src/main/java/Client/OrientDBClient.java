@@ -14,7 +14,7 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
 import java.util.Optional;
 
-//import java.util.ArrayList;
+import java.util.ArrayList;
 
 public class OrientDBClient {
     private OrientDB orient;
@@ -91,22 +91,22 @@ public class OrientDBClient {
     public void importData() {
         System.out.println("Generating data...");
         // Vertex
-//        ArrayList<String> arrayNodeNames = new ArrayList<>();
-//        arrayNodeNames.add("Orderline");
-//        this.dataLoader.loadXMLIntoDB("invoice.xml", "Invoice", arrayNodeNames);
-//        this.dataLoader.loadCSVIntoDB("person.csv", "\\|", "Person");
-//        this.dataLoader.loadCSVIntoDB("feedback.csv", "\\|", "Feedback");
-//        this.dataLoader.loadCSVIntoDB("post.csv", "\\|", "Post");
-//        this.dataLoader.loadCSVIntoDB("product.csv", ",", "Product");
-//        this.dataLoader.loadCSVIntoDB("vendor.csv", ",", "Vendor");
-//        this.dataLoader.loadJSONIntoDB("order.json", "Order");
+        ArrayList<String> arrayNodeNames = new ArrayList<>();
+        arrayNodeNames.add("Orderline");
+        this.dataLoader.loadXMLIntoDB("invoice.xml", "Invoice", arrayNodeNames);
+        this.dataLoader.loadCSVIntoDB("person.csv", "\\|", "Person");
+        this.dataLoader.loadCSVIntoDB("feedback.csv", "\\|", "Feedback");
+        this.dataLoader.loadCSVIntoDB("post.csv", "\\|", "Post");
+        this.dataLoader.loadCSVIntoDB("product.csv", ",", "Product");
+        this.dataLoader.loadCSVIntoDB("vendor.csv", ",", "Vendor");
+        this.dataLoader.loadJSONIntoDB("order.json", "Order");
 
         // Imported Edge
-//        this.dataLoader.loadCSVEdgeIntoDB("brandByProduct.csv", ",", "VendorSellProduct");
-//        this.dataLoader.loadCSVEdgeIntoDB("person_hasInterest_tag.csv", "\\|", "PersonHasInterestInTag");
-//        this.dataLoader.loadCSVEdgeIntoDB("person_knows_person.csv", "\\|", "PersonKnowsPerson");
-//        this.dataLoader.loadCSVEdgeIntoDB("post_hasCreator_person.csv", "\\|", "PostWasCreatedByPerson");
-//        this.dataLoader.loadCSVEdgeIntoDB("post_hasTag_tag.csv", "\\|", "PostIsLabelledByTag");
+        this.dataLoader.loadCSVEdgeIntoDB("brandByProduct.csv", ",", "VendorSellProduct");
+        this.dataLoader.loadCSVEdgeIntoDB("person_hasInterest_tag.csv", "\\|", "PersonHasInterestInTag");
+        this.dataLoader.loadCSVEdgeIntoDB("person_knows_person.csv", "\\|", "PersonKnowsPerson");
+        this.dataLoader.loadCSVEdgeIntoDB("post_hasCreator_person.csv", "\\|", "PostWasCreatedByPerson");
+        this.dataLoader.loadCSVEdgeIntoDB("post_hasTag_tag.csv", "\\|", "PostIsLabelledByTag");
 
         // Generated Edge
         generateEdge("ProductIsInOrder", "Product", "Order", "asin", "Orderline.asin", true);
