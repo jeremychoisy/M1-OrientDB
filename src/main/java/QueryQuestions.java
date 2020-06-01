@@ -24,7 +24,7 @@ class QueryQuestions {
         qq.question5(clientId, marque);
         qq.question6(clientId, "4398046521398");
         qq.question7(marque);
-        qq.question8();
+        qq.question8("2018");
         qq.question9();
         qq.question10();
     }
