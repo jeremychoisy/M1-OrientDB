@@ -14,18 +14,29 @@ class QueryQuestions {
 
     public static void main(String[] args) {
         QueryQuestions qq = new QueryQuestions();
-        qq.question1("2199023256728");
-        qq.question2("B0000568SY");
-        qq.question3("B0000568SY");
+        String clientId = "2199023256728";
+        String productId = "B0000568SY";
+        String marque = "Franklin Sports";
+        qq.question1(clientId);
+        qq.question2(productId, "2018");
+        qq.question3(productId);
         qq.question4();
-        qq.question5("2199023256728", "Franklin Sports");
-        qq.question6("2199023256728", "4398046521398");
-        qq.question7("Franklin Sports");
+        qq.question5(clientId, marque);
+        qq.question6(clientId, "4398046521398");
+        qq.question7(marque);
         qq.question8();
         qq.question9();
         qq.question10();
     }
 
+    /* For a given customer,
+     find his/her all related data including profile,
+     orders, invoices, feedback, comments, and posts in the last month,
+     return the category in which he/she has bought the largest number of products,
+     and return the tag which he/she has engaged the greatest times in the posts.
+    */
+
+    // A refaire !!!!!
     void question1(String clientId) {
         query = "Select $profile,$posts,$brandList2,$feedback,$orders,$brandList1 "
                 + "let $profile=(select from `Customer` where id=?),"
@@ -46,12 +57,16 @@ class QueryQuestions {
         orient.close();
     }
 
-    void question2(String productId) {
+    /* For a given product during a given period, find the people who commented or posted on it, and had bought it. */
+
+    // Normalement bon !!!!
+
+    void question2(String productId, String year) {
         query = "Select $person let $list=(select In(\'PostHasTag\').In(\'PersonHasPost\').id as pid "
                 + "from `Product` where productId=?),$person=(select PersonId,Orderline.productId from Order "
-                + "where OrderDate>\"2022\" and PersonId in $list and ? in Orderline.productId)";
+                + "where OrderDate> ? and PersonId in $list and ? in Orderline.productId)";
 
-        OResultSet rs = db.query(query, productId, productId);
+        OResultSet rs = db.query(query, productId, year, productId);
 
         while (rs.hasNext()) {
             OResult item = rs.next();
@@ -62,11 +77,19 @@ class QueryQuestions {
         orient.close();
     }
 
+    /*
+    For a given product during a given period,
+     find people who have undertaken activities related to it, e.g.,
+     posts, comments, and review,
+     and return sentences from these texts that contain negative sentiments.
+     */
+
+    // A Modifier avec la période
     void question3(String productId) {
         query = "Select $post,$feedback "
                 + "let $post=(select Expand(In(\'PostHasTag\')) from `Product` "
                 + "where productId=?),"
-                + "$feedback=(select * from `Feedback` where asin=? and feedback.charAt(1).asInteger() <5)";
+                + "$feedback=(select * from `Feedback` where asin=? and feedback.charAt(1).asInteger() <3)";
         OResultSet rs = db.query(query, productId, productId);
 
         while (rs.hasNext()) {
@@ -75,6 +98,13 @@ class QueryQuestions {
         }
     }
 
+    /*
+    Find the top-2 persons who spend the highest amount of money in orders.
+    Then for each person, traverse her knows-graph with 3-hop to find the friends,
+    and finally return the common friends of these two persons.
+     */
+
+    //Pas bon
     void question4() {
         String query = "SELECT commonset.size() from (SELECT intersect($set1,$set2) as commonset "
                 + "let $person = (select pid from (select PersonId as pid, SUM(TotalPrice) as sum from Order Group by PersonId order by sum desc limit 2)),"
@@ -88,6 +118,14 @@ class QueryQuestions {
         }
     }
 
+    /*
+    Given a start customer and a product category,
+     find persons who are this customer's friends within 3-hop friendships in Knows graph,
+     besides, they have bought products in the given category.
+     Finally, return feedback with the 5-rating review of those bought products.
+     */
+
+    //  Pas bon
     void question5(String clientId, String marque) {
         String query = "Select Out(\'PersonHasPost\').Out(\'PostHasTag\') " +
                 "as tags from (select Expand(Out(\'Knows\')) from Customer where id=?) " +
@@ -104,6 +142,12 @@ class QueryQuestions {
         orient.close();
     }
 
+    /*
+    Given customer 1 and customer 2, find persons in the shortest path between them in the subgraph,
+    and return the TOP 3 best sellers from all these persons' purchases.
+     */
+
+    //  Pas bon c'est pas un best of 3
     void question6(String clientId1, String clientId2) {
         query = "SELECT transactions, count(transactions) as cnt "
                 + "FROM(SELECT Order.Orderline.productId as transactions from(SELECT EXPAND(path) from(SELECT shortestPath($from, $to) AS path "
@@ -120,6 +164,12 @@ class QueryQuestions {
         orient.close();
     }
 
+    /*
+    For the products of a given vendor with declining sales compare to the former quarter,
+     analyze the reviews for these items to see if there are any negative sentiments.
+     */
+
+    // Rien à voir
     void question7(String brand) {
         query = "Select feedback from Feedback where asin in "
                 + "(Select dlist from(Select set(dlist) as dlist  "
@@ -142,8 +192,14 @@ class QueryQuestions {
         orient.close();
     }
 
+    /*
+    For all the products of a given category during a given year, compute its total sales amount,
+     and measure its popularity in the social media.
+     */
+
+    // Ajoutez en fonction d'une date
     void question8() {
-        String OQ8 = "Select Sum(Popularity) from(Select In(\'PostHasTag\').size() as Popularity "
+        query = "Select Sum(Popularity) from(Select In(\'PostHasTag\').size() as Popularity "
                 + "from `Product` Where productId in (Select  Distinct(Orderline.productId) "
                 + "From (Select Orderline From Order let  $brand=(select name as brand from `Vendor` where country='China') "
                 + "Where OrderDate>\"2018\" and OrderDate<\"2019\" unwind Orderline) Where Orderline.brand in $brand.brand))";
@@ -157,7 +213,12 @@ class QueryQuestions {
         rs.close();
         orient.close();
     }
+    /*
+    Find top-3 companies who have the largest amount of sales at one country, for each company,
+    compare the number of the male and female customers, and return the most recent posts of them.
+     */
 
+    //Pas bon
     void question9() {
         query = "Select Orderline.brand, count(*) from(Select PersonId, Orderline From Order "
                 + "Let  $brand=(select name as brand from `Vendor` where country='China') Where OrderDate>\"2018\" and OrderDate<\"2019\" unwind Orderline) "
@@ -172,6 +233,13 @@ class QueryQuestions {
         orient.close();
     }
 
+    /*
+    Find the top-10 most active persons by aggregating the posts during the last year,
+    then calculate their RFM (Recency, Frequency, Monetary) value in the same period,
+     and return their recent reviews and tags of interest.
+     */
+
+    // Je crois que c'est bon
     void question10() {
         query = "SELECT id, max(Order.OrderDate) as Recency,Order.size() as Frequency,sum(Order.TotalPrice) as Monetary FROM Customer "
                 + "Where id in(Select id, count(id) as cnt from (Select IN(\'PersonHasPost\').id[0] as id From Post "
