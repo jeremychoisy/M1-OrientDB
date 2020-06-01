@@ -7,10 +7,10 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import java.util.List;
 import java.util.Optional;
 
-public class Order {
+public class Invoice {
     private ODatabaseSession db;
 
-    public Order(ODatabaseSession db) {
+    public Invoice(ODatabaseSession db) {
         this.db = db;
     }
 
@@ -19,7 +19,7 @@ public class Order {
         OResultSet rs = db.query(query, PersonId);
 
         if (rs.hasNext()) {
-            OVertex result = this.db.newVertex("Order");
+            OVertex result = this.db.newVertex("Invoice");
 
             result.setProperty("PersonId", PersonId);
             result.setProperty("TotalPrice", TotalPrice);
@@ -33,7 +33,7 @@ public class Order {
     }
 
     public void update(String rid, String PersonId, String TotalPrice, String OrderId, String OrderDate, List<Object> orderLine) {
-        String query = "SELECT from Order where @rid = ?";
+        String query = "SELECT from Invoice where @rid = ?";
         OResultSet rs = db.query(query, rid);
 
         if (rs.hasNext()) {
@@ -64,7 +64,7 @@ public class Order {
     }
 
     public void delete(String rid) {
-        String query = "SELECT from Order where @rid = ?";
+        String query = "SELECT from Invoice where @rid = ?";
         OResultSet rs = db.query(query, rid);
 
         if (rs.hasNext()) {
@@ -78,14 +78,14 @@ public class Order {
     }
 
     public void read(String rid) {
-        String query = "SELECT from Order where @rid = ?";
+        String query = "SELECT from Invoice where @rid = ?";
         OResultSet rs = db.query(query, rid);
 
         if (rs.hasNext()) {
             Optional<OVertex> optionalVertex = rs.next().getVertex();
             if (optionalVertex.isPresent()) {
                 OVertex result = optionalVertex.get();
-                System.out.println("Queried order :" + result);
+                System.out.println("Queried invoice :" + result);
             }
         } else {
             System.out.println("Vertex not found");

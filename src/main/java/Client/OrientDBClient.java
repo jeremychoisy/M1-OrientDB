@@ -14,7 +14,7 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
 import java.util.Optional;
 
-//import java.util.ArrayList;
+import java.util.ArrayList;
 
 public class OrientDBClient {
     private OrientDB orient;
@@ -91,29 +91,29 @@ public class OrientDBClient {
     public void importData() {
         System.out.println("Generating data...");
         // Vertex
-//        ArrayList<String> arrayNodeNames = new ArrayList<>();
-//        arrayNodeNames.add("Orderline");
-//        this.dataLoader.loadXMLIntoDB("invoice.xml", "Invoice", arrayNodeNames);
-//        this.dataLoader.loadCSVIntoDB("person.csv", "\\|", "Person");
-//        this.dataLoader.loadCSVIntoDB("feedback.csv", "\\|", "Feedback");
-//        this.dataLoader.loadCSVIntoDB("post.csv", "\\|", "Post");
-//        this.dataLoader.loadCSVIntoDB("product.csv", ",", "Product");
-//        this.dataLoader.loadCSVIntoDB("vendor.csv", ",", "Vendor");
-//        this.dataLoader.loadJSONIntoDB("order.json", "Order");
+        ArrayList<String> arrayNodeNames = new ArrayList<>();
+        arrayNodeNames.add("Orderline");
+        this.dataLoader.loadXMLIntoDB("invoice.xml", "Invoice", arrayNodeNames);
+        this.dataLoader.loadCSVIntoDB("person.csv", "\\|", "Person");
+        this.dataLoader.loadCSVIntoDB("feedback.csv", "\\|", "Feedback");
+        this.dataLoader.loadCSVIntoDB("post.csv", "\\|", "Post");
+        this.dataLoader.loadCSVIntoDB("product.csv", ",", "Product");
+        this.dataLoader.loadCSVIntoDB("vendor.csv", ",", "Vendor");
+        this.dataLoader.loadJSONIntoDB("order.json", "Order");
 
         // Imported Edge
-//        this.dataLoader.loadCSVEdgeIntoDB("brandByProduct.csv", ",", "VendorSellProduct");
-//        this.dataLoader.loadCSVEdgeIntoDB("person_hasInterest_tag.csv", "\\|", "PersonHasInterestInTag");
-//        this.dataLoader.loadCSVEdgeIntoDB("person_knows_person.csv", "\\|", "PersonKnowsPerson");
-//        this.dataLoader.loadCSVEdgeIntoDB("post_hasCreator_person.csv", "\\|", "PostWasCreatedByPerson");
-//        this.dataLoader.loadCSVEdgeIntoDB("post_hasTag_tag.csv", "\\|", "PostIsLabelledByTag");
+        this.dataLoader.loadCSVEdgeIntoDB("brandByProduct.csv", ",", "VendorSellProduct");
+        this.dataLoader.loadCSVEdgeIntoDB("person_hasInterest_tag.csv", "\\|", "PersonHasInterestInTag");
+        this.dataLoader.loadCSVEdgeIntoDB("person_knows_person.csv", "\\|", "PersonKnowsPerson");
+        this.dataLoader.loadCSVEdgeIntoDB("post_hasCreator_person.csv", "\\|", "PostWasCreatedByPerson");
+        this.dataLoader.loadCSVEdgeIntoDB("post_hasTag_tag.csv", "\\|", "PostIsLabelledByTag");
 
         // Generated Edge
         generateEdge("ProductIsInOrder", "Product", "Order", "asin", "Orderline.asin", true);
-//        generateEdge("ProductHasFeedback", "Product", "Feedback", "asin", "productId", false);
-//        generateEdge("PersonGaveFeedback", "Person", "Feedback", "id", "personId", false);
-//        generateEdge("PersonBoughtOrder", "Person", "Order", "id", "PersonId", false);
-//        generateEdge("OrderHasInvoice", "Order", "Invoice", "OrderId", "OrderId", false);
+        generateEdge("ProductHasFeedback", "Product", "Feedback", "asin", "productId", false);
+        generateEdge("PersonGaveFeedback", "Person", "Feedback", "id", "personId", false);
+        generateEdge("PersonBoughtOrder", "Person", "Order", "id", "PersonId", false);
+        generateEdge("OrderHasInvoice", "Order", "Invoice", "OrderId", "OrderId", false);
 
         System.out.println("Data has been successfully generated.");
     }
@@ -128,7 +128,7 @@ public class OrientDBClient {
 
             String secondQuery;
             if (isInFieldQueriedInArray) {
-                String[] fields = inField.split(".");
+                String[] fields = inField.split("\\.");
                 secondQuery = "SELECT from " + inClass + " where " + fields[0] + " CONTAINS( " + fields[1] + " = ?)";
             } else {
                 secondQuery = "SELECT from " + inClass + " where " + inField + " = ?";
