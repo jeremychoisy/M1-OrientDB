@@ -7,8 +7,14 @@ import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.OEdge;
+import com.orientechnologies.orient.core.record.OVertex;
+import com.orientechnologies.orient.core.sql.executor.OResult;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
-import java.util.ArrayList;
+import java.util.Optional;
+
+//import java.util.ArrayList;
 
 public class OrientDBClient {
     private OrientDB orient;
@@ -16,7 +22,8 @@ public class OrientDBClient {
     private DataLoader dataLoader;
 
     private static final String[] VERTEX_CLASSES = {"Person", "Feedback", "Order", "Tag", "Post", "Invoice", "Vendor", "Product"};
-    private static final String[] EDGE_CLASSES = {"VendorSellProduct", "PersonHasInterestInTag", "PersonKnowsPerson", "PostWasCreatedByPerson", "PostIsLabelledByTag"};
+    private static final String[] EDGE_CLASSES = {"VendorSellProduct", "PersonHasInterestInTag", "PersonKnowsPerson", "PostWasCreatedByPerson", "PostIsLabelledByTag",
+            "ProductIsInOrder", "ProductHasFeedback", "PersonGaveFeedback", "PersonBoughtOrder", "OrderHasInvoice"};
 
     public OrientDBClient(boolean recreateDB) {
         this.orient = new OrientDB("remote:88.136.56.208", "root", "root", OrientDBConfig.defaultConfig());
@@ -84,23 +91,65 @@ public class OrientDBClient {
     public void importData() {
         System.out.println("Generating data...");
         // Vertex
-        ArrayList<String> arrayNodeNames = new ArrayList<>();
-        arrayNodeNames.add("Orderline");
-        this.dataLoader.loadXMLIntoDB("invoice.xml", "Invoice", arrayNodeNames);
-        this.dataLoader.loadCSVIntoDB("person.csv", "\\|", "Person");
-        this.dataLoader.loadCSVIntoDB("feedback.csv", "\\|", "Feedback");
-        this.dataLoader.loadCSVIntoDB("post.csv", "\\|", "Post");
-        this.dataLoader.loadCSVIntoDB("product.csv", ",", "Product");
-        this.dataLoader.loadCSVIntoDB("vendor.csv", ",", "Vendor");
-        this.dataLoader.loadJSONIntoDB("order.json", "Order");
+//        ArrayList<String> arrayNodeNames = new ArrayList<>();
+//        arrayNodeNames.add("Orderline");
+//        this.dataLoader.loadXMLIntoDB("invoice.xml", "Invoice", arrayNodeNames);
+//        this.dataLoader.loadCSVIntoDB("person.csv", "\\|", "Person");
+//        this.dataLoader.loadCSVIntoDB("feedback.csv", "\\|", "Feedback");
+//        this.dataLoader.loadCSVIntoDB("post.csv", "\\|", "Post");
+//        this.dataLoader.loadCSVIntoDB("product.csv", ",", "Product");
+//        this.dataLoader.loadCSVIntoDB("vendor.csv", ",", "Vendor");
+//        this.dataLoader.loadJSONIntoDB("order.json", "Order");
 
-        // Edge
-        this.dataLoader.loadCSVEdgeIntoDB("brandByProduct.csv", ",", "VendorSellProduct");
-        this.dataLoader.loadCSVEdgeIntoDB("person_hasInterest_tag.csv", "\\|", "PersonHasInterestInTag");
-        this.dataLoader.loadCSVEdgeIntoDB("person_knows_person.csv", "\\|", "PersonKnowsPerson");
-        this.dataLoader.loadCSVEdgeIntoDB("post_hasCreator_person.csv", "\\|", "PostWasCreatedByPerson");
-        this.dataLoader.loadCSVEdgeIntoDB("post_hasTag_tag.csv", "\\|", "PostIsLabelledByTag");
+        // Imported Edge
+//        this.dataLoader.loadCSVEdgeIntoDB("brandByProduct.csv", ",", "VendorSellProduct");
+//        this.dataLoader.loadCSVEdgeIntoDB("person_hasInterest_tag.csv", "\\|", "PersonHasInterestInTag");
+//        this.dataLoader.loadCSVEdgeIntoDB("person_knows_person.csv", "\\|", "PersonKnowsPerson");
+//        this.dataLoader.loadCSVEdgeIntoDB("post_hasCreator_person.csv", "\\|", "PostWasCreatedByPerson");
+//        this.dataLoader.loadCSVEdgeIntoDB("post_hasTag_tag.csv", "\\|", "PostIsLabelledByTag");
+
+        // Generated Edge
+        generateEdge("ProductIsInOrder", "Product", "Order", "asin", "Orderline.asin", true);
+//        generateEdge("ProductHasFeedback", "Product", "Feedback", "asin", "productId", false);
+//        generateEdge("PersonGaveFeedback", "Person", "Feedback", "id", "personId", false);
+//        generateEdge("PersonBoughtOrder", "Person", "Order", "id", "PersonId", false);
+//        generateEdge("OrderHasInvoice", "Order", "Invoice", "OrderId", "OrderId", false);
 
         System.out.println("Data has been successfully generated.");
+    }
+
+    private void generateEdge(String className, String outClass, String inClass, String outField, String inField, boolean isInFieldQueriedInArray) {
+        String firstQuery = "SELECT  * from " + outClass;
+        OResultSet firstRs = db.query(firstQuery);
+
+        while (firstRs.hasNext()) {
+            OResult firstRes = firstRs.next();
+            String index = firstRes.getProperty(outField);
+
+            String secondQuery;
+            if (isInFieldQueriedInArray) {
+                String[] fields = inField.split(".");
+                secondQuery = "SELECT from " + inClass + " where " + fields[0] + " CONTAINS( " + fields[1] + " = ?)";
+            } else {
+                secondQuery = "SELECT from " + inClass + " where " + inField + " = ?";
+            }
+            OResultSet secondRs = db.query(secondQuery, index);
+
+            Optional<OVertex> optionalFirstVertex = firstRes.getVertex();
+
+            while(secondRs.hasNext()) {
+                Optional<OVertex> optionalSecondVertex = secondRs.next().getVertex();
+
+                if (optionalFirstVertex.isPresent() && optionalSecondVertex.isPresent()) {
+                    OVertex firstVertex = optionalFirstVertex.get();
+                    OVertex secondVertex = optionalSecondVertex.get();
+                    OEdge edge = firstVertex.addEdge(secondVertex, className);
+
+                    edge.save();
+                }
+            }
+            secondRs.close();
+        }
+        firstRs.close();
     }
 }
